@@ -269,7 +269,7 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
             <TableHead>Account</TableHead>
           <TableHead className="text-right">Amount</TableHead>
             {(on_edit || on_delete) && <TableHead className="w-[100px]">Actions</TableHead>}
-        </TableRow>
+        </TableRow> 
       </TableHeader>
       <TableBody>
         {filtered_transactions.map((transaction: any, index: number) => (
@@ -284,7 +284,7 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
               <TableCell>
                 <div className="flex items-center gap-2">
                   {transaction.type === "debit" ? (
-                    <ArrowDownCircle className="h-4 w-4 text-destructive" />
+                    <ArrowDownCircle className="h-4 w-4 text-red-600" />
                   ) : (
                     <ArrowUpCircle className="h-4 w-4 text-green-600" />
                   )}
@@ -316,7 +316,7 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
               <TableCell
                 className={`text-right font-semibold ${
                   transaction.type === "debit"
-                    ? "text-destructive"
+                    ? "text-red-600"
                     : "text-green-600"
                 }`}
               >
@@ -379,7 +379,7 @@ const DeleteTransactionButton = ({ transaction, on_delete }: DeleteTransactionBu
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+          className="h-8 w-8 text-red-600 hover:text-red-600 hover:bg-red-600/10"
         >
           <Trash className="h-4 w-4" />
         </Button>
