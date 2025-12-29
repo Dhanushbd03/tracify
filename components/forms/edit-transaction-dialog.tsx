@@ -78,7 +78,7 @@ export const EditTransactionDialog = ({
         type: transaction.type,
         description: transaction.description || "",
         date: transaction_date.toISOString().split("T")[0],
-        time: transaction_date.toTimeString().slice(0, 5),
+        time: transaction_date.toTimeString().slice(0, 8),
         account_id: transaction.accountId,
         category_id: transaction.categoryId || undefined,
       });

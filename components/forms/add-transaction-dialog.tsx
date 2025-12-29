@@ -64,7 +64,7 @@ export const AddTransactionDialog = ({
       type: "debit",
       description: "",
       date: new Date().toISOString().split("T")[0],
-      time: new Date().toTimeString().slice(0, 5),
+      time: new Date().toTimeString().slice(0, 8),
       account_id: "",
       category_id: undefined,
     },

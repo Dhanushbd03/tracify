@@ -72,7 +72,7 @@ export async function GET(req: Request) {
       type: item.type,
       amount: item.amount ? String(item.amount) : "0.00",
       description: item.description || "",
-      category: item.category || "Uncategorized",
+      category: item.category || "Uncategorized",                                 
       account: item.account,
       accountId: item.accountId,
       categoryId: item.categoryId,

@@ -197,12 +197,12 @@ const CategoriesPage = () => {
         </div>
 
         <div className="mb-4">
-          <h2 className="text-lg sm:text-xl font-semibold mb-4">YOUR CATEGORIES</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">YOUR CATEGORIES ( {data.data.length} )</h2>
           {data.data && data.data.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {data.data.map((category: any) => (
                 <Card key={category.id} className="border-none drop-shadow-sm">
-                  <CardContent className="p-4">
+                  <CardContent className="p-2 py-0">
                     <div className="flex items-center gap-3">
                       <div className="rounded-full bg-primary/10 p-2">
                         <Tag className="h-5 w-5 text-primary" />

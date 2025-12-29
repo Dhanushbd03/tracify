@@ -78,7 +78,14 @@ export const TransactionFormFields = ({
           control={control}
           name="date"
           render={({ field }) => {
-            const date_value = field.value ? new Date(field.value) : undefined;
+            const date_value = field.value ? new Date(field.value + "T00:00:00") : undefined;
+            
+            const format_date_local = (date: Date): string => {
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, "0");
+              const day = String(date.getDate()).padStart(2, "0");
+              return `${year}-${month}-${day}`;
+            };
             
             return (
               <FormItem>
@@ -104,7 +111,7 @@ export const TransactionFormFields = ({
                         selected={date_value}
                         onSelect={(date) => {
                           if (date) {
-                            field.onChange(date.toISOString().split("T")[0]);
+                            field.onChange(format_date_local(date));
                           }
                         }}
                         initialFocus
@@ -124,7 +131,7 @@ export const TransactionFormFields = ({
             <FormItem>
               <FormLabel>Time *</FormLabel>
               <FormControl>
-                <Input type="time" {...field} />
+                <Input type="time" step="1" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -26,6 +26,7 @@ import {
 import { AlertCircle, ArrowDownCircle, ArrowUpCircle, Pencil, Trash, Save } from "lucide-react";
 import { toast } from "sonner";
 import useSWR from "swr";
+import { format_amount } from "@/lib/amount-utils";
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -37,18 +38,6 @@ const fetcher = async (url: string) => {
     throw error;
   }
   return res.json();
-};
-
-const format_amount = (amount: string, type: string): string => {
-  const num = parseFloat(amount);
-  if (isNaN(num)) return "₹0.00";
-  const formatted = new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(num);
-  return type === "debit" ? `-${formatted}` : formatted;
 };
 
 type TransactionsTableProps = {
@@ -224,34 +213,6 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
     </div>
   ) : null;
 
-  const date_format = (given_date: Date , needed:string = "date") => {
-    if (!given_date) return "";
-
-    let date_value: Date;
-    if (given_date instanceof Date) {
-      date_value = given_date;
-    } else if (typeof given_date === "string") {
-      date_value = new Date(given_date);
-    } else {
-      date_value = new Date(String(given_date));
-    }
-    
-    if (isNaN(date_value.getTime())) {
-      return String(date_value);
-    }
-    
-    const day = date_value.getDate().toString().padStart(2, "0");
-    const month = (date_value.getMonth() + 1).toString().padStart(2, "0");
-    const year = date_value.getFullYear();
-    const time = date_value.getHours().toString().padStart(2, "0");
-    const minutes = date_value.getMinutes().toString().padStart(2, "0");
-    const seconds = date_value.getSeconds().toString().padStart(2, "0");
-    if (needed === "time") {
-      return `${time}:${minutes}:${seconds}`;
-    }else{
-      return `${day}/${month}/${year}`;
-    }
-  };
 
 
   return (
@@ -277,18 +238,26 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
               <TableCell className="text-muted-foreground">{index + 1}</TableCell>
               <TableCell className="font-medium">
                <div className="flex flex-col gap-2">
-                <span>{date_format(transaction.date)}</span>
-                <span className="text-xs text-muted-foreground">{date_format(transaction.date, "time")}</span>
+                <span>{new Date(transaction.date).toLocaleDateString("en-IN", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+})}</span>
+                <span className="text-xs text-muted-foreground">{new Date(transaction.date).toLocaleTimeString("en-IN", {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "numeric",
+})}</span>
                 </div>
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-2">
+                <div className="flex items-start gap-2 w-full text-wrap break-words ">
                   {transaction.type === "debit" ? (
-                    <ArrowDownCircle className="h-4 w-4 text-red-600" />
+                    <ArrowDownCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
                   ) : (
-                    <ArrowUpCircle className="h-4 w-4 text-green-600" />
+                    <ArrowUpCircle className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
                   )}
-                  <span>{transaction.description || "No description"}</span>
+                  <span className="overflow-ellipsis">{transaction.description || "No description"}</span>
                 </div>
               </TableCell>
               <TableCell>
@@ -320,7 +289,7 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
                     : "text-green-600"
                 }`}
               >
-                {format_amount(transaction.amount, transaction.type)}
+                {format_amount(transaction.amount, transaction.type as "debit" | "credit")}
               </TableCell>
               {(on_edit || on_delete) && (
                 <TableCell>

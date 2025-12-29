@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { AlertCircle } from "lucide-react";
 import useSWR from "swr";
+import { format_balance } from "@/lib/amount-utils";
+import { format_date_detailed } from "@/lib/date-utils";
 
 type BalanceHistoryItem = {
   id: string;
@@ -43,29 +44,6 @@ const BalanceHistoryDialog = ({ account_id, account_name, is_open, on_open_chang
     fetcher
   );
 
-  const format_balance = (balance: string) => {
-    const num = parseFloat(balance);
-    if (isNaN(num)) return "₹0.00";
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(num);
-  };
-
-  const format_date = (date_string: string | null) => {
-    if (!date_string) return "Unknown date";
-    const date = new Date(date_string);
-    if (isNaN(date.getTime())) return "Invalid date";
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
-  };
 
   return (
     <Dialog open={is_open} onOpenChange={on_open_change}>
@@ -112,7 +90,7 @@ const BalanceHistoryDialog = ({ account_id, account_name, is_open, on_open_chang
                           {format_balance(item.balance)}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {format_date(item.created_at)}
+                          {format_date_detailed(item.created_at)}
                         </p>
                       </div>
                       {index > 0 && data.data[index - 1] && (
