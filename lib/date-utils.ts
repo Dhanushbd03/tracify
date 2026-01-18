@@ -90,6 +90,27 @@ export const format_date_detailed = (date_string: string | null): string => {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    second: "2-digit",
   }).format(date);
 };
+
+
+export function formatTimeIST(isoDate: string) {
+  return new Date(isoDate).toLocaleTimeString("en-US", {
+    timeZone: "UTC",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
+export function formatDateIST(isoDate: string) {
+  return new Date(isoDate).toLocaleDateString("en-IN", {
+    timeZone: "UTC",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
 

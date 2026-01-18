@@ -34,17 +34,21 @@ const navigation = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  className?: string;
+}
+
+export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full w-64 flex-col border-r bg-sidebar">
+    <div className={cn("flex h-full w-64 flex-col border-r bg-sidebar", className)}>
       <div className="flex h-16 items-center border-b px-6">
-        <Image src="/logo-v2.png" alt="Tracify" width={200} height={100} />
+        <Image src="/logo.png" alt="Tracify" width={200} height={100} />
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navigation.map((item) => {
-          const is_active = 
+          const is_active =
             (item.href === "/" && pathname === "/") ||
             (item.href !== "/" && pathname?.startsWith(item.href));
           return (

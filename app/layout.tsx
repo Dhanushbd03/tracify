@@ -2,16 +2,18 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import {
   ClerkProvider,
-  SignInButton,
   SignedOut,
   SignedIn,
 } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Sidebar } from "@/components/sidebar";
+import { MobileSidebar } from "@/components/mobile-sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
 import "./globals.css";
+import Image from "next/image";
+import Logo from "@/public/logo.png";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +28,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Tracify",
   description: "A personal expense tracker.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -48,16 +53,11 @@ export default function RootLayout({
             <SignedOut>
               <header className="border-b">
                 <div className="max-w-screen-2xl mx-auto px-4 py-4 flex justify-between items-center">
-                  <Link href="/" className="text-2xl font-bold hover:opacity-80 transition-opacity">
-                    Tracify
+                  <Link href="/" className="text-2xl font-bold hover:opacity-80 transition-opacity h-20">
+                    <Image src={Logo} alt="Logo" className="h-full w-60" />
                   </Link>
                   <div className="flex items-center gap-4">
                     <ThemeToggle />
-                    <SignInButton mode="modal">
-                      <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                        Sign In
-                      </button>
-                    </SignInButton>
                   </div>
                 </div>
               </header>
@@ -65,8 +65,19 @@ export default function RootLayout({
             </SignedOut>
             <SignedIn>
               <div className="flex h-screen overflow-hidden">
-                <Sidebar />
-                <main className="flex-1 overflow-y-auto">{children}</main>
+                <Sidebar className="hidden md:flex" />
+                <div className="flex flex-1 flex-col overflow-hidden">
+                  <header className="flex h-16 items-center shrink-0 border-b px-4 md:hidden">
+                    <MobileSidebar />
+                    <div className="flex-1 flex justify-center">
+                      <Image src={Logo} alt="Logo" className="h-10 w-auto" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <ThemeToggle />
+                    </div>
+                  </header>
+                  <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+                </div>
               </div>
             </SignedIn>
           </ThemeProvider>

@@ -55,7 +55,7 @@ const Dashboard = () => {
   const is_summary_loading = summary_loading || !summary_data;
 
   return (
-    <div className="flex-1 p-8 space-y-6">
+    <div className="space-y-6">
       <DashboardHeader
         from_date={from_date}
         to_date={to_date}
@@ -144,33 +144,21 @@ const LandingPage = () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mt-16">
-          <Card className="border-none drop-shadow-sm">
-            <CardContent className="pt-6">
-              <TrendingUp className="h-8 w-8 text-primary mb-2" />
-              <h3 className="text-lg font-semibold mb-2">Track Spending</h3>
-              <p className="text-sm text-muted-foreground">
-                Monitor your expenses across different categories and see where your money goes.
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-none drop-shadow-sm">
-            <CardContent className="pt-6">
-              <Wallet className="h-8 w-8 text-primary mb-2" />
-              <h3 className="text-lg font-semibold mb-2">Manage Accounts</h3>
-              <p className="text-sm text-muted-foreground">
-                Keep track of multiple accounts and balances in one convenient place.
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-none drop-shadow-sm">
-            <CardContent className="pt-6">
-              <BarChart3 className="h-8 w-8 text-primary mb-2" />
-              <h3 className="text-lg font-semibold mb-2">Visual Insights</h3>
-              <p className="text-sm text-muted-foreground">
-                Get visual summaries and charts to understand your spending patterns.
-              </p>
-            </CardContent>
-          </Card>
+          <LandingCard
+            icon={<TrendingUp className="h-8 w-8 text-primary mb-2" />}
+            title="Track Spending"
+            description="Monitor your expenses across different categories and see where your money goes."
+          />
+          <LandingCard
+            icon={<Wallet className="h-8 w-8 text-primary mb-2" />}
+            title="Manage Accounts"
+            description="Keep track of multiple accounts and balances in one convenient place."
+          />
+          <LandingCard
+            icon={<BarChart3 className="h-8 w-8 text-primary mb-2" />}
+            title="Visual Insights"
+            description="Get visual summaries and charts to understand your spending patterns."
+          />
         </div>
       </div>
     </div>
@@ -189,3 +177,28 @@ export default function Home() {
     </>
   );
 }
+
+
+
+type LandingCardProps = {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+
+export const LandingCard = ({ icon, title, description }: LandingCardProps) => {
+  return (
+    <Card className="border-none drop-shadow-sm">
+      <CardContent className="">
+        <div className="flex items-center gap-2">
+          {icon}
+          <h3 className="text-lg font-semibold mb-2"> {title}</h3>
+        </div>
+        <p className="text-sm text-muted-foreground text-left">
+          {description}
+        </p>
+      </CardContent>
+    </Card>
+  );
+};

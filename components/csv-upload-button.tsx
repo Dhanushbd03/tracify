@@ -145,7 +145,7 @@ const CsvUploadButton = ({ onUpload, accounts }: CsvUploadButtonProps) => {
     } catch (error: any) {
       const error_message = error?.error_message || error?.message || "Failed to import transactions";
       setUploadError(error_message);
-      
+
       if (error?.errors && Array.isArray(error.errors) && error.errors.length > 0) {
         setUploadErrors(error.errors);
       } else if (error_message.includes("Row")) {
@@ -182,7 +182,7 @@ const CsvUploadButton = ({ onUpload, accounts }: CsvUploadButtonProps) => {
       }}
     >
       <DialogTrigger asChild>
-        <Button size="sm">
+        <Button size="sm" className="w-full sm:w-auto">
           <Upload className="size-4 mr-2" />
           Import
         </Button>

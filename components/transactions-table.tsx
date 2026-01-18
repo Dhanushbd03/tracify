@@ -27,6 +27,8 @@ import { AlertCircle, ArrowDownCircle, ArrowUpCircle, Pencil, Trash, Save } from
 import { toast } from "sonner";
 import useSWR from "swr";
 import { format_amount } from "@/lib/amount-utils";
+import { format_date_detailed, formatDateIST, formatTimeIST } from "@/lib/date-utils";
+import { format } from "date-fns";
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -57,9 +59,9 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
   if (date_from) params.append("from", date_from);
   if (date_to) params.append("to", date_to);
   if (search_query) params.append("search", search_query);
-  
+
   const url = `/api/transactions${params.toString() ? `?${params.toString()}` : ""}`;
-  
+
   const { data, error, mutate } = useSWR(url, fetcher);
   const [category_changes, setCategoryChanges] = useState<Record<string, string | null>>({});
   const [is_saving, setIsSaving] = useState(false);
@@ -82,16 +84,16 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
           [transaction_id]: category_id,
         };
       }
-      
+
       const original_category_id = original_transaction.categoryId ?? null;
       const new_category_id = category_id ?? null;
-      
+
       if (original_category_id === new_category_id) {
         const updated = { ...prev };
         delete updated[transaction_id];
         return updated;
       }
-      
+
       return {
         ...prev,
         [transaction_id]: new_category_id,
@@ -122,7 +124,7 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
       });
 
       await Promise.all(update_promises);
-      
+
       setCategoryChanges({});
       mutate();
       toast.success("Categories updated successfully!");
@@ -220,104 +222,95 @@ const TransactionsTable = ({ account_id, date_from, date_to, category_id, search
       {is_mounted && save_button && createPortal(save_button, document.body)}
       <div className="relative">
         <div className="rounded-md border">
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[60px]">S.No</TableHead>
-          <TableHead>Date</TableHead>
-            <TableHead>Description</TableHead>
-          <TableHead>Category</TableHead>
-            <TableHead>Account</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-            {(on_edit || on_delete) && <TableHead className="w-[100px]">Actions</TableHead>}
-        </TableRow> 
-      </TableHeader>
-      <TableBody>
-        {filtered_transactions.map((transaction: any, index: number) => (
-          <TableRow key={transaction.id}>
-              <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-              <TableCell className="font-medium">
-               <div className="flex flex-col gap-2">
-                <span>{new Date(transaction.date).toLocaleDateString("en-IN", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-})}</span>
-                <span className="text-xs text-muted-foreground">{new Date(transaction.date).toLocaleTimeString("en-IN", {
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "numeric",
-})}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-start gap-2 w-full text-wrap break-words ">
-                  {transaction.type === "debit" ? (
-                    <ArrowDownCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
-                  ) : (
-                    <ArrowUpCircle className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[60px] hidden md:table-cell">S.No</TableHead>
+                <TableHead className="px-2">Date</TableHead>
+                <TableHead className="px-2">Description</TableHead>
+                <TableHead className="hidden sm:table-cell px-2">Category</TableHead>
+                <TableHead className="hidden lg:table-cell px-2">Account</TableHead>
+                <TableHead className="text-right px-2">Amount</TableHead>
+                {(on_edit || on_delete) && <TableHead className="w-[80px] px-2 text-right">Actions</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered_transactions.map((transaction: any, index: number) => (
+                <TableRow key={transaction.id}>
+                  <TableCell className="text-muted-foreground hidden md:table-cell">{index + 1}</TableCell>
+                  <TableCell className="px-2">
+                    <div className="flex flex-col min-w-[70px]">
+                      <span className="text-sm">{formatDateIST(transaction.date)}</span>
+                      <span className="text-[10px] text-muted-foreground">{formatTimeIST(transaction.date)}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-2">
+                    <div className="flex items-start gap-1.5 w-full max-w-[150px] md:max-w-xs">
+                      {transaction.type === "debit" ? (
+                        <ArrowDownCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
+                      ) : (
+                        <ArrowUpCircle className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+                      )}
+                      <span className="text-sm truncate">{transaction.description || "No description"}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell px-2">
+                    <select
+                      value={category_changes[transaction.id] !== undefined
+                        ? (category_changes[transaction.id] || "")
+                        : (transaction.categoryId || "")}
+                      onChange={(e) => {
+                        const new_value = e.target.value === "" ? null : e.target.value;
+                        handle_category_change(transaction.id, new_value);
+                      }}
+                      className="h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs font-medium min-w-[100px] focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      <option value="">Uncategorized</option>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground hidden lg:table-cell">
+                    {transaction.account}
+                  </TableCell>
+                  <TableCell
+                    className={`text-right font-semibold px-2 text-sm ${transaction.type === "debit"
+                      ? "text-red-600"
+                      : "text-green-600"
+                      }`}
+                  >
+                    {format_amount(transaction.amount, transaction.type as "debit" | "credit")}
+                  </TableCell>
+                  {(on_edit || on_delete) && (
+                    <TableCell className="px-2">
+                      <div className="flex items-center gap-1 justify-end">
+                        {on_edit && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => on_edit(transaction)}
+                            className="h-8 w-8"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {on_delete && (
+                          <DeleteTransactionButton
+                            transaction={transaction}
+                            on_delete={on_delete}
+                          />
+                        )}
+                      </div>
+                    </TableCell>
                   )}
-                  <span className="overflow-ellipsis">{transaction.description || "No description"}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <select
-                  value={category_changes[transaction.id] !== undefined 
-                    ? (category_changes[transaction.id] || "") 
-                    : (transaction.categoryId || "")}
-                  onChange={(e) => {
-                    const new_value = e.target.value === "" ? null : e.target.value;
-                    handle_category_change(transaction.id, new_value);
-                  }}
-                  className="h-8 rounded-md border border-input bg-background px-2 py-1 text-xs font-medium min-w-[120px] focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="">Uncategorized</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                {transaction.account}
-              </TableCell>
-              <TableCell
-                className={`text-right font-semibold ${
-                  transaction.type === "debit"
-                    ? "text-red-600"
-                    : "text-green-600"
-                }`}
-              >
-                {format_amount(transaction.amount, transaction.type as "debit" | "credit")}
-              </TableCell>
-              {(on_edit || on_delete) && (
-                <TableCell>
-                  <div className="flex items-center gap-2 justify-end">
-                    {on_edit && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => on_edit(transaction)}
-                        className="h-8 w-8"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    )}
-                    {on_delete && (
-                      <DeleteTransactionButton
-                        transaction={transaction}
-                        on_delete={on_delete}
-                      />
-                    )}
-                  </div>
-                </TableCell>
-              )}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-    </div>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </>
   );

@@ -42,7 +42,7 @@ function SummaryCard({
           </>
         ) : (
           <>
-            <div className="text-2xl font-bold">
+            <div className="text-xl sm:text-2xl font-bold">
               {new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",

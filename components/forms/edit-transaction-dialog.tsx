@@ -70,15 +70,30 @@ export const EditTransactionDialog = ({
     },
   });
 
+  const format_date_utc = (iso_date: string): string => {
+    const date = new Date(iso_date);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const format_time_utc = (iso_date: string): string => {
+    const date = new Date(iso_date);
+    const hours = String(date.getUTCHours()).padStart(2, "0");
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
   useEffect(() => {
     if (transaction && is_open) {
-      const transaction_date = new Date(transaction.date);
       form.reset({
         amount: transaction.amount,
         type: transaction.type,
         description: transaction.description || "",
-        date: transaction_date.toISOString().split("T")[0],
-        time: transaction_date.toTimeString().slice(0, 8),
+        date: format_date_utc(transaction.date),
+        time: format_time_utc(transaction.date),
         account_id: transaction.accountId,
         category_id: transaction.categoryId || undefined,
       });
@@ -95,8 +110,10 @@ export const EditTransactionDialog = ({
     setUpdateError(null);
 
     try {
-      const date_time = new Date(`${data.date}T${data.time}`).toISOString();
-      await onSubmit({ ...data, date: date_time });
+      const [year, month, day] = data.date.split("-").map(Number);
+      const [hours, minutes, seconds] = data.time.split(":").map(Number);
+      const utc_date = new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds || 0));
+      await onSubmit({ ...data, date: utc_date.toISOString() });
       form.reset();
       on_open_change(false);
     } catch (error) {

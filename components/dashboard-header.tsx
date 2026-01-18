@@ -47,15 +47,15 @@ export function DashboardHeader({
         <UserButton />
       </div>
 
-      <div className="flex items-center gap-4 flex-wrap">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">From Date:</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium">From Date</span>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-[200px] justify-start text-left font-normal",
+                  "w-full justify-start text-left font-normal h-9",
                   !from_date && "text-muted-foreground"
                 )}
               >
@@ -74,14 +74,14 @@ export function DashboardHeader({
           </Popover>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">To Date:</span>
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium">To Date</span>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-[200px] justify-start text-left font-normal",
+                  "w-full justify-start text-left font-normal h-9",
                   !to_date && "text-muted-foreground"
                 )}
               >
@@ -99,10 +99,10 @@ export function DashboardHeader({
           </Popover>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Account:</span>
+        <div className="flex flex-col gap-1.5 sm:col-span-2 lg:col-span-1">
+          <span className="text-sm font-medium">Account</span>
           <Select value={selected_account} onValueChange={on_account_change}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full h-9">
               <SelectValue placeholder="Select account" />
             </SelectTrigger>
             <SelectContent>

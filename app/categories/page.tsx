@@ -58,16 +58,16 @@ const CategoriesPage = () => {
     });
 
     if (!response.ok) {
-      const error_data = await response.json().catch(() => ({ 
+      const error_data = await response.json().catch(() => ({
         success: false,
         error: { message: response.statusText, details: response.statusText }
       }));
-      
-      const error_message = error_data?.error?.details || 
-                           error_data?.error?.message || 
-                           error_data?.message || 
-                           `Failed to create category: ${response.statusText}`;
-      
+
+      const error_message = error_data?.error?.details ||
+        error_data?.error?.message ||
+        error_data?.message ||
+        `Failed to create category: ${response.statusText}`;
+
       throw new Error(error_message);
     }
 
@@ -88,16 +88,16 @@ const CategoriesPage = () => {
     });
 
     if (!response.ok) {
-      const error_data = await response.json().catch(() => ({ 
+      const error_data = await response.json().catch(() => ({
         success: false,
         error: { message: response.statusText, details: response.statusText }
       }));
-      
-      const error_message = error_data?.error?.details || 
-                           error_data?.error?.message || 
-                           error_data?.message || 
-                           `Failed to update category: ${response.statusText}`;
-      
+
+      const error_message = error_data?.error?.details ||
+        error_data?.error?.message ||
+        error_data?.message ||
+        `Failed to update category: ${response.statusText}`;
+
       throw new Error(error_message);
     }
 
@@ -114,16 +114,16 @@ const CategoriesPage = () => {
       });
 
       if (!response.ok) {
-        const error_data = await response.json().catch(() => ({ 
+        const error_data = await response.json().catch(() => ({
           success: false,
           error: { message: response.statusText, details: response.statusText }
         }));
-        
-        const error_message = error_data?.error?.details || 
-                             error_data?.error?.message || 
-                             error_data?.message || 
-                             `Failed to delete category: ${response.statusText}`;
-        
+
+        const error_message = error_data?.error?.details ||
+          error_data?.error?.message ||
+          error_data?.message ||
+          `Failed to delete category: ${response.statusText}`;
+
         throw new Error(error_message);
       }
 
@@ -189,8 +189,8 @@ const CategoriesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
+    <div className="max-w-7xl mx-auto">
+      <div className="pt-2 pb-4">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl sm:text-3xl font-semibold">Categories</h1>
           <AddCategoryDialog onSubmit={handle_add_category} />
@@ -212,8 +212,8 @@ const CategoriesPage = () => {
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="icon"
                             className="h-8 w-8 shrink-0"
                           >

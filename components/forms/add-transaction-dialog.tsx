@@ -57,14 +57,30 @@ export const AddTransactionDialog = ({
   const [is_submitting, setIsSubmitting] = useState(false);
   const [submit_error, setSubmitError] = useState<string | null>(null);
 
+  const get_utc_date_string = (): string => {
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(now.getUTCDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const get_utc_time_string = (): string => {
+    const now = new Date();
+    const hours = String(now.getUTCHours()).padStart(2, "0");
+    const minutes = String(now.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(now.getUTCSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
   const form = useForm<TransactionFormData>({
     resolver: zodResolver(transaction_schema),
     defaultValues: {
       amount: "",
       type: "debit",
       description: "",
-      date: new Date().toISOString().split("T")[0],
-      time: new Date().toTimeString().slice(0, 8),
+      date: get_utc_date_string(),
+      time: get_utc_time_string(),
       account_id: "",
       category_id: undefined,
     },
@@ -75,8 +91,10 @@ export const AddTransactionDialog = ({
     setSubmitError(null);
 
     try {
-      const date_time = new Date(`${data.date}T${data.time}`).toISOString();
-      await onSubmit({ ...data, date: date_time });
+      const [year, month, day] = data.date.split("-").map(Number);
+      const [hours, minutes, seconds] = data.time.split(":").map(Number);
+      const utc_date = new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds || 0));
+      await onSubmit({ ...data, date: utc_date.toISOString() });
       form.reset();
       setIsOpen(false);
     } catch (error) {
@@ -102,7 +120,7 @@ export const AddTransactionDialog = ({
       }}
     >
       <DialogTrigger asChild>
-        <Button size="sm">
+        <Button size="sm" className="w-full sm:w-auto">
           <Plus className="size-4 mr-2" />
           Add Transaction
         </Button>

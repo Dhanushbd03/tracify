@@ -10,7 +10,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import useSWR from "swr";
 import { format_balance } from "@/lib/amount-utils";
-import { format_date_detailed } from "@/lib/date-utils";
+import { format_date_detailed, formatDateIST, formatTimeIST } from "@/lib/date-utils";
 
 type BalanceHistoryItem = {
   id: string;
@@ -90,7 +90,7 @@ const BalanceHistoryDialog = ({ account_id, account_name, is_open, on_open_chang
                           {format_balance(item.balance)}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {format_date_detailed(item.created_at)}
+                          {formatDateIST(item.created_at || "")} {formatTimeIST(item.created_at || "")}
                         </p>
                       </div>
                       {index > 0 && data.data[index - 1] && (

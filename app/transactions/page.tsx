@@ -34,10 +34,10 @@ const TransactionsPage = () => {
   const [selected_account_id, setSelectedAccountId] = useState<string>("");
   const [selected_category_id, setSelectedCategoryId] = useState<string>("");
   const [search_query, setSearchQuery] = useState<string>("");
-  
+
   const default_to = endOfMonth(new Date());
   const default_from = startOfMonth(default_to);
-  
+
   const [from_date, setFromDate] = useState<Date>(default_from);
   const [to_date, setToDate] = useState<Date>(default_to);
 
@@ -103,9 +103,9 @@ const TransactionsPage = () => {
       const error_data = await response.json().catch(() => ({ message: response.statusText }));
       throw new Error(
         error_data.error?.details ||
-          error_data.error?.message ||
-          error_data.message ||
-          `Failed to create transaction: ${response.statusText}`
+        error_data.error?.message ||
+        error_data.message ||
+        `Failed to create transaction: ${response.statusText}`
       );
     }
 
@@ -146,9 +146,9 @@ const TransactionsPage = () => {
       const error_data = await response.json().catch(() => ({ message: response.statusText }));
       throw new Error(
         error_data.error?.details ||
-          error_data.error?.message ||
-          error_data.message ||
-          `Failed to update transaction: ${response.statusText}`
+        error_data.error?.message ||
+        error_data.message ||
+        `Failed to update transaction: ${response.statusText}`
       );
     }
 
@@ -195,7 +195,7 @@ const TransactionsPage = () => {
         const error_data = result;
         const error_message = error_data.error?.message || "Failed to import transactions";
         const errors = error_data.error?.errors || [];
-        
+
         const error_obj: any = new Error(error_message);
         error_obj.errors = errors;
         error_obj.error_message = error_message;
@@ -203,7 +203,7 @@ const TransactionsPage = () => {
       }
 
       refresh_transactions();
-      
+
       if (result.success && result.data) {
         const { imported } = result.data;
         toast.success(`Successfully imported ${imported} transaction${imported !== 1 ? "s" : ""}!`);
@@ -218,12 +218,12 @@ const TransactionsPage = () => {
   };
 
   return (
-    <div className="max-w-screen-2xl mx-auto w-full pb-10 pt-6">
-      <Card className="border-none drop-shadow-sm">
-        <CardHeader className="gap-y-4">
-          <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl font-semibold">Transaction History</CardTitle>
-            <div className="flex gap-x-2">
+    <div className="max-w-screen-2xl mx-auto w-full pb-10 px-2 sm:px-4 md:px-0">
+      <Card className="border-none drop-shadow-sm overflow-hidden">
+        <CardHeader className="gap-y-4 px-4 sm:px-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <CardTitle className="text-xl sm:text-2xl font-semibold">Transaction History</CardTitle>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               {accounts_data?.data && accounts_data.data.length > 0 && (
                 <>
                   <AddTransactionDialog
@@ -252,10 +252,10 @@ const TransactionsPage = () => {
             }}
             onSubmit={handle_update_transaction}
           />
-          <div className="flex flex-wrap items-center gap-4 pt-2">
-            <div className="flex items-center gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 pt-2">
+            <div className="flex flex-col gap-1.5">
               <label htmlFor="search-input" className="text-sm font-medium">
-                Search:
+                Search
               </label>
               <div className="relative">
                 <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -266,20 +266,20 @@ const TransactionsPage = () => {
                   value={search_query}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handle_search_keydown}
-                  className="h-9 w-[250px] pl-8"
+                  className="h-9 w-full pl-8"
                 />
               </div>
             </div>
             {accounts_data?.data && accounts_data.data.length > 0 && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-1.5">
                 <label htmlFor="account-filter" className="text-sm font-medium">
-                  Account:
+                  Account
                 </label>
                 <select
                   id="account-filter"
                   value={selected_account_id}
                   onChange={(e) => setSelectedAccountId(e.target.value)}
-                  className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs"
+                  className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="">All Accounts</option>
                   {accounts_data.data.map((account: any) => (
@@ -291,15 +291,15 @@ const TransactionsPage = () => {
               </div>
             )}
             {categories_data?.data && categories_data.data.length > 0 && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-1.5">
                 <label htmlFor="category-filter" className="text-sm font-medium">
-                  Category:
+                  Category
                 </label>
                 <select
                   id="category-filter"
                   value={selected_category_id}
                   onChange={(e) => setSelectedCategoryId(e.target.value)}
-                  className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs"
+                  className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="">All Categories</option>
                   <option value="uncategorized">Uncategorized</option>
@@ -311,16 +311,16 @@ const TransactionsPage = () => {
                 </select>
               </div>
             )}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-1.5">
               <label htmlFor="date-from" className="text-sm font-medium">
-                From:
+                From
               </label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-[200px] justify-start text-left font-normal",
+                      "w-full justify-start text-left font-normal h-9",
                       !from_date && "text-muted-foreground"
                     )}
                   >
@@ -338,16 +338,16 @@ const TransactionsPage = () => {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-1.5">
               <label htmlFor="date-to" className="text-sm font-medium">
-                To:
+                To
               </label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-[200px] justify-start text-left font-normal",
+                      "w-full justify-start text-left font-normal h-9",
                       !to_date && "text-muted-foreground"
                     )}
                   >

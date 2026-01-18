@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowDownCircle, ArrowUpCircle, Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 type TransactionFormData = {
@@ -78,14 +77,28 @@ export const TransactionFormFields = ({
           control={control}
           name="date"
           render={({ field }) => {
-            const date_value = field.value ? new Date(field.value + "T00:00:00") : undefined;
+            const parse_date_utc = (date_str: string): Date | undefined => {
+              if (!date_str) return undefined;
+              const [year, month, day] = date_str.split("-").map(Number);
+              if (isNaN(year) || isNaN(month) || isNaN(day)) return undefined;
+              return new Date(Date.UTC(year, month - 1, day));
+            };
             
-            const format_date_local = (date: Date): string => {
-              const year = date.getFullYear();
-              const month = String(date.getMonth() + 1).padStart(2, "0");
-              const day = String(date.getDate()).padStart(2, "0");
+            const format_date_utc = (date: Date): string => {
+              const year = date.getUTCFullYear();
+              const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+              const day = String(date.getUTCDate()).padStart(2, "0");
               return `${year}-${month}-${day}`;
             };
+            
+            const format_display_date = (date_str: string): string => {
+              if (!date_str) return "";
+              const date = parse_date_utc(date_str);
+              if (!date) return "";
+              return format_date_utc(date);
+            };
+            
+            const date_value = field.value ? parse_date_utc(field.value) : undefined;
             
             return (
               <FormItem>
@@ -102,7 +115,7 @@ export const TransactionFormFields = ({
                         type="button"
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date_value ? format(date_value, "dd/MM/yyyy") : <span>Pick a date</span>}
+                        {date_value ? format_display_date(field.value) : <span>Pick a date</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -111,7 +124,12 @@ export const TransactionFormFields = ({
                         selected={date_value}
                         onSelect={(date) => {
                           if (date) {
-                            field.onChange(format_date_local(date));
+                            const utc_date = new Date(Date.UTC(
+                              date.getFullYear(),
+                              date.getMonth(),
+                              date.getDate()
+                            ));
+                            field.onChange(format_date_utc(utc_date));
                           }
                         }}
                         initialFocus
